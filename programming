@@ -1,0 +1,68 @@
+--------------------------------------------------------------------------
+## RAW URL ENCODE EXAMPLE (1-raw-url-encode.php)
+--------------------------------------------------------------------------
+<?php
+// (A) THE FUNKY URL
+$url = "http://site.com/my path/my@+%pic.jpg";
+ 
+// (B) BREAK URL INTO PARTS
+$parts = parse_url($url);
+if (isset($parts["path"])) {
+  $parts["path"] = trim($parts["path"], "/");
+  $parts["path"] = explode("/", $parts["path"]);
+}
+ 
+// (C) COMBINE & ENCODE PATH/FILE ONLY
+$encoded = $parts["scheme"] . "://" . $parts["host"];
+if (isset($parts["path"])) { foreach ($parts["path"] as $part) {
+  $encoded .= "/";
+  $encoded .= rawurlencode($part);
+}}
+ 
+// (D) THE RESULT
+// http://site.com/my%20path/my%40%2B%25pic.jpg
+print_r($parts);
+echo $encoded;
+
+--------------------------------------------------------------------------
+## URL ENCODE EXAMPLE (2-url-encode.php)
+--------------------------------------------------------------------------
+<?php
+// (A) SOME DUMMY DATA TO APPEND
+$data = [
+  "name" => "John Doe",
+  "email" => "john@doe.com"
+];
+ 
+// (B) CREATE QUERY STRING USING URLENCODE
+$query = "";
+foreach ($data as $key=>$value) {
+  $query .= urlencode($key) . "=" . urlencode($value) . "&";
+}
+$query = substr($query, 0, -1); // strip the last &
+ 
+// (C) FULL URL WITH QUERY STRING
+// http://site.com/api?name=John+Doe&email=john%40doe.com
+$url = "http://site.com/api?$query";
+echo $url;
+
+
+--------------------------------------------------------------------------
+QUICK SUMMARY – RAWURLENCODE VS URLENCODE
+<pre>
+rawurlencode          [Standard] - RFC 3986 
+                      [Used For] - Encoding URL path and file name.
+                      [Character] - Replace	Non-alphanumeric characters are replaced with a percent sign and corresponding hex code.
+                      [Exceptions] - Dash, underscore, period, and tilde are not replaced.
+                      [White Spaces] - White spaces are replaced with %20.
+
+urlencode             [Standard] - RFC 1866
+                      [Used For] - Encoding query string.
+                      [Character] - Non-alphanumeric characters are replaced with a percent sign and corresponding hex code.
+                      [Exceptions] - Dash, underscore, period are not replaced.
+                      [White Spaces] - White spaces are replaced with a plus sign.
+</pre> 
+
+
+
+ 
